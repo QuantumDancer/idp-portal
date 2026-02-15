@@ -37,6 +37,7 @@ import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { NotificationsPage } from '@backstage/plugin-notifications';
 import { SignalsDisplay } from '@backstage/plugin-signals';
+import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
 
 const app = createApp({
   apis,
@@ -58,7 +59,18 @@ const app = createApp({
     });
   },
   components: {
-    SignInPage: props => <SignInPage {...props} auto providers={['guest']} />,
+    SignInPage: props => (
+      <SignInPage
+        {...props}
+        auto
+        provider={{
+          id: 'gitlab-auth-provider',
+          title: 'GitLab',
+          message: 'Sign in using GitLab',
+          apiRef: gitlabAuthApiRef,
+        }}
+      />
+    ),
   },
 });
 
