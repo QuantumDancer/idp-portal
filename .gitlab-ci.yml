@@ -1,0 +1,46 @@
+stages:
+  - build
+  - package
+
+# Host build: install deps, type-check, and bundle the backend
+build:
+  stage: build
+  image: node:24-trixie-slim
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends git python3 g++ build-essential
+  cache:
+    key: yarn-${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+  script:
+    - corepack enable
+    - yarn install --immutable
+    - yarn tsc
+    - yarn build:backend
+  artifacts:
+    paths:
+      - packages/backend/dist/
+    expire_in: 1 hour
+
+# Build the Docker image and push to the GitLab container registry
+docker:
+  stage: package
+  image: docker:29-cli
+  services:
+    - docker:29-dind
+  variables:
+    DOCKER_TLS_CERTDIR: '/certs'
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+    IMAGE_LATEST: $CI_REGISTRY_IMAGE:latest # TODO: Only set this on the main branch
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    # --provenance=false: Docker generates attestation manifests by default,
+    # producing an OCI index instead of a plain image manifest. GitLab's
+    # container registry doesn't display digests correctly for these multi-manifest
+    # images. See https://gitlab.com/gitlab-org/gitlab/-/issues/388865
+    # TODO: This seems to be an old issue. Find out why I'm still affected by this,
+    # even though I run an up-to-date GitLab instance.
+    - docker build -f packages/backend/Dockerfile --provenance=false -t $IMAGE_TAG -t $IMAGE_LATEST .
+    - docker push $IMAGE_TAG
+    - docker push $IMAGE_LATEST
