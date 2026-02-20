@@ -26,6 +26,40 @@ build:
       - packages/backend/dist/
     expire_in: 1 hour
 
+lint:
+  stage: build
+  image: node:24-trixie-slim
+  cache:
+    key: yarn-${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+  script:
+    - corepack enable
+    - yarn install --immutable
+    - yarn lint:all
+    - yarn prettier:check
+
+test:
+  stage: build
+  image: node:24-trixie-slim
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends git python3 g++ build-essential
+  cache:
+    key: yarn-${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+  script:
+    - corepack enable
+    - yarn install --immutable
+    - yarn test:all
+  artifacts:
+    when: always
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+  coverage: '/All files\s*\|\s*([\d.]+)/'
+
 # Build the Docker image and push to the GitLab container registry
 docker:
   stage: package
