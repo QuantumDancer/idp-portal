@@ -1,7 +1,8 @@
 stages:
   - build
   - package
-  - deploy
+  - deploy:homelab
+  - deploy:development
 
 variables:
   DEPLOYMENT_REPO: idp/platform/idp-portal-deployment
@@ -92,7 +93,6 @@ docker:
 
 # Update the image tag in the GitOps deployment repo
 .deploy:
-  stage: deploy
   image: alpine:3
   before_script:
     - apk add --no-cache git
@@ -109,6 +109,7 @@ docker:
     - git push
 
 deploy:homelab:
+  stage: deploy:homelab
   extends: .deploy
   variables:
     ENVIRONMENT: homelab
@@ -122,6 +123,7 @@ deploy:homelab:
       allow_failure: true
 
 deploy:development:
+  stage: deploy:development
   extends: .deploy
   variables:
     ENVIRONMENT: development
