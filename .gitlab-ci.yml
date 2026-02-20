@@ -1,6 +1,10 @@
 stages:
   - build
   - package
+  - deploy
+
+variables:
+  DEPLOYMENT_REPO: idp/platform/idp-portal-deployment
 
 # Host build: install deps, type-check, and bundle the backend
 build:
@@ -31,7 +35,6 @@ docker:
   variables:
     DOCKER_TLS_CERTDIR: '/certs'
     IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-    IMAGE_LATEST: $CI_REGISTRY_IMAGE:latest # TODO: Only set this on the main branch
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
@@ -41,6 +44,48 @@ docker:
     # images. See https://gitlab.com/gitlab-org/gitlab/-/issues/388865
     # TODO: This seems to be an old issue. Find out why I'm still affected by this,
     # even though I run an up-to-date GitLab instance.
-    - docker build -f packages/backend/Dockerfile --provenance=false -t $IMAGE_TAG -t $IMAGE_LATEST .
+    - docker build -f packages/backend/Dockerfile --provenance=false -t $IMAGE_TAG .
     - docker push $IMAGE_TAG
-    - docker push $IMAGE_LATEST
+
+# Update the image tag in the GitOps deployment repo
+.deploy:
+  stage: deploy
+  image: alpine:3
+  before_script:
+    - apk add --no-cache git
+    - wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+    - chmod +x /usr/local/bin/yq
+    - git config --global user.email "gitlab-ci@${CI_SERVER_HOST}"
+    - git config --global user.name "GitLab CI"
+    - git clone -b "${DEPLOYMENT_BRANCH}" "https://deploy:${DEPLOYMENT_TOKEN}@${CI_SERVER_HOST}/${DEPLOYMENT_REPO}.git" /tmp/deployment
+  script:
+    - yq -i ".image.tag = \"${CI_COMMIT_SHORT_SHA}\"" /tmp/deployment/environments/${ENVIRONMENT}.yaml
+    - cd /tmp/deployment
+    - git add environments/${ENVIRONMENT}.yaml
+    - git commit -m "Deploy ${CI_PROJECT_NAME} ${CI_COMMIT_SHORT_SHA} to ${ENVIRONMENT}"
+    - git push
+
+deploy:homelab:
+  extends: .deploy
+  variables:
+    ENVIRONMENT: homelab
+    DEPLOYMENT_BRANCH: development
+  environment:
+    name: homelab
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+      when: manual
+      allow_failure: true
+
+deploy:development:
+  extends: .deploy
+  variables:
+    ENVIRONMENT: development
+    DEPLOYMENT_BRANCH: development
+  environment:
+    name: development
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+      allow_failure: true
