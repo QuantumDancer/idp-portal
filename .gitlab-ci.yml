@@ -38,14 +38,23 @@ docker:
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
+    - docker context create builder
+    - docker buildx create builder --driver docker-container --use
     # --provenance=false: Docker generates attestation manifests by default,
     # producing an OCI index instead of a plain image manifest. GitLab's
     # container registry doesn't display digests correctly for these multi-manifest
     # images. See https://gitlab.com/gitlab-org/gitlab/-/issues/388865
     # TODO: This seems to be an old issue. Find out why I'm still affected by this,
     # even though I run an up-to-date GitLab instance.
-    - docker build -f packages/backend/Dockerfile --provenance=false -t $IMAGE_TAG .
-    - docker push $IMAGE_TAG
+    - >-
+      docker buildx build
+      -f packages/backend/Dockerfile
+      --provenance=false
+      --cache-from type=registry,ref=$CI_REGISTRY_IMAGE/cache
+      --cache-to type=registry,ref=$CI_REGISTRY_IMAGE/cache,mode=max
+      --push
+      -t $IMAGE_TAG
+      .
 
 # Update the image tag in the GitOps deployment repo
 .deploy:
