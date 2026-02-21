@@ -47,6 +47,9 @@ kubernetes:
     - type: 'config'
       clusters:
         - name: Homelab
+          # url is required by the config schema but bypassed when serviceAccountToken is
+          # absent — Backstage uses the pod's auto-mounted service account (in-cluster) instead.
+          url: https://kubernetes.default.svc.cluster.local
           authProvider: 'serviceAccount'
 
 catalog:
