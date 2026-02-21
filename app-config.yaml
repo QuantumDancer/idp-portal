@@ -82,6 +82,10 @@ catalog:
   rules:
     - allow: [Component, System, API, Resource, Location]
   locations:
+    # The portal itself
+    - type: file
+      target: ../../catalog-info.yaml
+
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
     - type: file
       target: ../../examples/entities.yaml
@@ -108,8 +112,27 @@ catalog:
     #   rules:
     #     - allow: [User, Group]
 
+# see https://backstage.io/docs/features/kubernetes/configuration for kubernetes configuration options
 kubernetes:
-  # see https://backstage.io/docs/features/kubernetes/configuration for kubernetes configuration options
+  frontend:
+    podDelete:
+      enabled: true
+  serviceLocatorMethod:
+    type: 'multiTenant'
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - name: Homelab
+          url: https://talos-prod.home.rottlr.de:6443
+          authProvider: 'serviceAccount'
+          serviceAccountToken: ${K8S_TALOS_PROD_TOKEN}
+          # TODO: Add headlamp support for cluster dashboard
+          caData: ${K8S_TALOS_PROD_CA_DATA}
+          # TODO: Enable support for Argo Rollouts once available
+          # customResources:
+          #   - group: 'argoproj.io'
+          #     apiVersion: 'v1alpha1'
+          #     plural: 'rollouts'
 
 # see https://backstage.io/docs/permissions/getting-started for more on the permission framework
 permission:
