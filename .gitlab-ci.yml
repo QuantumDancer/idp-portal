@@ -10,13 +10,11 @@ variables:
 # Host build: install deps, type-check, and bundle the backend
 build:
   stage: build
-  image: node:24-trixie-slim
-  before_script:
-    - apt-get update && apt-get install -y --no-install-recommends git python3 g++ build-essential
+  image: gitlab.home.rottlr.de:5050/idp/base-images/base-image-node-debian:v0.1.0
   cache:
     key: yarn-${CI_COMMIT_REF_SLUG}
     paths:
-      - node_modules/
+      - .yarn/cache/
   script:
     - corepack enable
     - yarn install --immutable
@@ -29,11 +27,11 @@ build:
 
 lint:
   stage: build
-  image: node:24-trixie-slim
+  image: gitlab.home.rottlr.de:5050/idp/base-images/base-image-node-debian:v0.1.0
   cache:
     key: yarn-${CI_COMMIT_REF_SLUG}
     paths:
-      - node_modules/
+      - .yarn/cache/
   script:
     - corepack enable
     - yarn install --immutable
@@ -42,13 +40,11 @@ lint:
 
 test:
   stage: build
-  image: node:24-trixie-slim
-  before_script:
-    - apt-get update && apt-get install -y --no-install-recommends git python3 g++ build-essential
+  image: gitlab.home.rottlr.de:5050/idp/base-images/base-image-node-debian:v0.1.0
   cache:
     key: yarn-${CI_COMMIT_REF_SLUG}
     paths:
-      - node_modules/
+      - .yarn/cache/
   script:
     - corepack enable
     - yarn install --immutable
