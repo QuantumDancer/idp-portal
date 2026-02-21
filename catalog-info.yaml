@@ -10,5 +10,5 @@ metadata:
     backstage.io/kubernetes-id: idp-portal
 spec:
   type: website
-  owner: user:benjamin
+  owner: group:default/platform
   lifecycle: experimental
