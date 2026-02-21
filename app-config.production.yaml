@@ -1,4 +1,5 @@
 app:
+  title: Ben's IDP Portal
   baseUrl: ${BASE_URL}
 
 backend:
