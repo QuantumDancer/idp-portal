@@ -1,7 +1,8 @@
 stages:
   - build
   - package
-  - deploy
+  - deploy:homelab
+  - deploy:development
 
 variables:
   DEPLOYMENT_REPO: idp/platform/idp-portal-deployment
@@ -9,13 +10,11 @@ variables:
 # Host build: install deps, type-check, and bundle the backend
 build:
   stage: build
-  image: node:24-trixie-slim
-  before_script:
-    - apt-get update && apt-get install -y --no-install-recommends git python3 g++ build-essential
+  image: gitlab.home.rottlr.de:5050/idp/base-images/base-image-node-debian:v0.1.0
   cache:
     key: yarn-${CI_COMMIT_REF_SLUG}
     paths:
-      - node_modules/
+      - .yarn/cache/
   script:
     - corepack enable
     - yarn install --immutable
@@ -25,6 +24,38 @@ build:
     paths:
       - packages/backend/dist/
     expire_in: 1 hour
+
+lint:
+  stage: build
+  image: gitlab.home.rottlr.de:5050/idp/base-images/base-image-node-debian:v0.1.0
+  cache:
+    key: yarn-${CI_COMMIT_REF_SLUG}
+    paths:
+      - .yarn/cache/
+  script:
+    - corepack enable
+    - yarn install --immutable
+    - yarn lint:all
+    - yarn prettier:check
+
+test:
+  stage: build
+  image: gitlab.home.rottlr.de:5050/idp/base-images/base-image-node-debian:v0.1.0
+  cache:
+    key: yarn-${CI_COMMIT_REF_SLUG}
+    paths:
+      - .yarn/cache/
+  script:
+    - corepack enable
+    - yarn install --immutable
+    - yarn test:all
+  artifacts:
+    when: always
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+  coverage: '/All files\s*\|\s*([\d.]+)/'
 
 # Build the Docker image and push to the GitLab container registry
 docker:
@@ -58,7 +89,6 @@ docker:
 
 # Update the image tag in the GitOps deployment repo
 .deploy:
-  stage: deploy
   image: alpine:3
   before_script:
     - apk add --no-cache git
@@ -75,6 +105,7 @@ docker:
     - git push
 
 deploy:homelab:
+  stage: deploy:homelab
   extends: .deploy
   variables:
     ENVIRONMENT: homelab
@@ -88,6 +119,7 @@ deploy:homelab:
       allow_failure: true
 
 deploy:development:
+  stage: deploy:development
   extends: .deploy
   variables:
     ENVIRONMENT: development
