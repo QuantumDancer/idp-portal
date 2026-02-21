@@ -37,6 +37,10 @@ backend:
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 integrations:
+  gitlab:
+    - host: gitlab.home.rottlr.de
+      token: ${GITLAB_TOKEN}
+      apiBaseUrl: https://gitlab.home.rottlr.de/api/v4
 
 proxy:
   ### Example for how to add a proxy endpoint for the frontend.
@@ -75,43 +79,6 @@ auth:
 scaffolder:
   # see https://backstage.io/docs/features/software-templates/configuration for software template options
 
-catalog:
-  import:
-    entityFilename: catalog-info.yaml
-    pullRequestBranchName: backstage-integration
-  rules:
-    - allow: [Component, System, API, Resource, Location]
-  locations:
-    # The portal itself
-    - type: file
-      target: ../../catalog-info.yaml
-
-    # Local example data, file locations are relative to the backend process, typically `packages/backend`
-    - type: file
-      target: ../../examples/entities.yaml
-
-    # Local example template
-    - type: file
-      target: ../../examples/template/template.yaml
-      rules:
-        - allow: [Template]
-
-    # Local example organizational data
-    - type: file
-      target: ../../examples/org.yaml
-      rules:
-        - allow: [User, Group]
-
-    ## Uncomment these lines to add more example data
-    # - type: url
-    #   target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all.yaml
-
-    ## Uncomment these lines to add an example org
-    # - type: url
-    #   target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
-    #   rules:
-    #     - allow: [User, Group]
-
 # see https://backstage.io/docs/features/kubernetes/configuration for kubernetes configuration options
 kubernetes:
   frontend:
@@ -133,6 +100,30 @@ kubernetes:
           #   - group: 'argoproj.io'
           #     apiVersion: 'v1alpha1'
           #     plural: 'rollouts'
+
+catalog:
+  providers:
+    gitlab:
+      development:
+        # https://backstage.io/docs/integrations/gitlab/discovery
+        host: gitlab.home.rottlr.de
+        branch: main
+        group: idp
+        schedule:
+          frequency: { minutes: 30 }
+          timeout: { minutes: 3 }
+        # https://backstage.io/docs/integrations/gitlab/org
+        orgEnabled: true
+        relations:
+          - INHERITED
+          - SHARED_FROM_GROUPS
+        rules:
+          - allow: [Group, User]
+  import:
+    entityFilename: catalog-info.yaml
+    pullRequestBranchName: backstage-integration
+  rules:
+    - allow: [Component, System, API, Resource, Location]
 
 # see https://backstage.io/docs/permissions/getting-started for more on the permission framework
 permission:

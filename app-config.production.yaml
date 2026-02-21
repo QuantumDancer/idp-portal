@@ -22,9 +22,24 @@ backend:
       #   ca: # if you have a CA file and want to verify it you can uncomment this section
       #     $file: <file-path>/ca/server.crt
 
+integrations:
+  gitlab:
+    - host: gitlab.home.rottlr.de
+      token: ${GITLAB_TOKEN}
+      apiBaseUrl: https://gitlab.home.rottlr.de/api/v4
+
 auth:
+  environment: homelab
   providers:
-    guest: {}
+    gitlab:
+      homelab:
+        clientId: ${AUTH_GITLAB_CLIENT_ID}
+        clientSecret: ${AUTH_GITLAB_CLIENT_SECRET}
+        audience: https://gitlab.home.rottlr.de
+        sessionDuration: { hours: 4 }
+        signIn:
+          resolvers:
+            - resolver: usernameMatchingUserEntityName
 
 kubernetes:
   clusterLocatorMethods:
@@ -34,23 +49,25 @@ kubernetes:
           authProvider: 'serviceAccount'
 
 catalog:
-  # Overrides the default list locations from app-config.yaml as these contain example data.
-  # See https://backstage.io/docs/features/software-catalog/#adding-components-to-the-catalog for more details
-  # on how to get entities into the catalog.
-  locations:
-    # Local example data, replace this with your production config, these are intended for demo use only.
-    # File locations are relative to the backend process, typically in a deployed context, such as in a Docker container, this will be the root
-    - type: file
-      target: ./examples/entities.yaml
-
-    # Local example template
-    - type: file
-      target: ./examples/template/template.yaml
-      rules:
-        - allow: [Template]
-
-    # Local example organizational data
-    - type: file
-      target: ./examples/org.yaml
-      rules:
-        - allow: [User, Group]
+  providers:
+    gitlab:
+      yourProviderId:
+        # https://backstage.io/docs/integrations/gitlab/discovery
+        host: gitlab.home.rottlr.de
+        branch: main
+        group: idp
+        schedule:
+          frequency: { minutes: 30 }
+          timeout: { minutes: 3 }
+        # https://backstage.io/docs/integrations/gitlab/org
+        orgEnabled: true
+        relations:
+          - INHERITED
+          - SHARED_FROM_GROUPS
+        rules:
+          - allow: [Group, User]
+  import:
+    entityFilename: catalog-info.yaml
+    pullRequestBranchName: backstage-integration
+  rules:
+    - allow: [Component, System, API, Resource, Location]
