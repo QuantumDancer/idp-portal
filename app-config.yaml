@@ -123,7 +123,7 @@ catalog:
     entityFilename: catalog-info.yaml
     pullRequestBranchName: backstage-integration
   rules:
-    - allow: [Component, System, API, Resource, Location]
+    - allow: [Component, System, API, Resource, Location, Template]
 
 # see https://backstage.io/docs/permissions/getting-started for more on the permission framework
 permission:
