@@ -12,3 +12,4 @@ spec:
   type: website
   owner: group:default/platform
   lifecycle: experimental
+  system: idp
