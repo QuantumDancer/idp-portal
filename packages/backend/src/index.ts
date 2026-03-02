@@ -7,6 +7,10 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
+import {
+  gitlabPlugin,
+  catalogPluginGitlabFillerProcessorModule,
+} from '@immobiliarelabs/backstage-plugin-gitlab-backend';
 
 const backend = createBackend();
 
@@ -64,5 +68,11 @@ backend.add(import('@backstage/plugin-kubernetes-backend'));
 // notifications and signals plugins
 backend.add(import('@backstage/plugin-notifications-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));
+
+// gitlab plugin (immobiliarelabs) — exposes /api/gitlab proxy and REST endpoints
+// used by the @immobiliarelabs/backstage-plugin-gitlab frontend plugin
+backend.add(gitlabPlugin);
+// auto-fills gitlab.com/project-slug annotation on catalog entities discovered from GitLab
+backend.add(catalogPluginGitlabFillerProcessorModule);
 
 backend.start();

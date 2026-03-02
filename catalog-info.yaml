@@ -8,6 +8,10 @@ metadata:
     # The matching label `backstage.io/kubernetes-id: idp-portal` must be
     # present on the Deployment (and its Pods) in the cluster.
     backstage.io/kubernetes-id: idp-portal
+    # Required for @immobiliarelabs/backstage-plugin-gitlab on self-hosted instances.
+    # The instance annotation is needed because the host differs from gitlab.com.
+    gitlab.com/project-slug: 'idp/platform/idp-portal'
+    gitlab.com/instance: 'gitlab.home.rottlr.de'
 spec:
   type: website
   owner: group:default/platform
