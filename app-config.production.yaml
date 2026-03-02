@@ -52,6 +52,14 @@ kubernetes:
           url: https://kubernetes.default.svc.cluster.local
           authProvider: 'serviceAccount'
 
+argocd:
+  appLocatorMethods:
+    - type: 'config'
+      instances:
+        - name: homelab
+          url: https://argocd.k8s.home.rottlr.de
+          token: ${ARGOCD_HOMELAB_TOKEN}
+
 catalog:
   providers:
     gitlab:

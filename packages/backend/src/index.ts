@@ -69,7 +69,10 @@ backend.add(import('@backstage/plugin-kubernetes-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));
 
-// gitlab plugin (immobiliarelabs) — exposes /api/gitlab proxy and REST endpoints
+// argocd plugin (Roadie) - queries ArgoCD instances and exposes sync/health data
+backend.add(import('@roadiehq/backstage-plugin-argo-cd-backend'));
+
+// gitlab plugin (immobiliarelabs) - exposes /api/gitlab proxy and REST endpoints
 // used by the @immobiliarelabs/backstage-plugin-gitlab frontend plugin
 backend.add(gitlabPlugin);
 // auto-fills gitlab.com/project-slug annotation on catalog entities discovered from GitLab

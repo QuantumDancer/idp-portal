@@ -101,6 +101,20 @@ kubernetes:
           #     apiVersion: 'v1alpha1'
           #     plural: 'rollouts'
 
+argocd:
+  appLocatorMethods:
+    - type: 'config'
+      instances:
+        - name: homelab
+          url: https://argocd.k8s.home.rottlr.de
+          token: ${ARGOCD_HOMELAB_TOKEN}
+        # - name: dev
+        #   url: https://argo.dev.idp.rottlr.de
+        #   token: ${ARGOCD_DEV_TOKEN}
+        # - name: prod
+        #   url: https://argo.prod.idp.rottlr.de
+        #   token: ${ARGOCD_PROD_TOKEN}
+
 catalog:
   providers:
     gitlab:

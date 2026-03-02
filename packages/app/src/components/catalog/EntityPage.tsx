@@ -68,6 +68,11 @@ import {
   EntityGitlabCoverageCard,
   EntityGitlabIssuesTable,
 } from '@immobiliarelabs/backstage-plugin-gitlab';
+import {
+  EntityArgoCDOverviewCard,
+  EntityArgoCDHistoryCard,
+  isArgocdAvailable,
+} from '@roadiehq/backstage-plugin-argo-cd';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -88,6 +93,10 @@ const cicdContent = (
           <EntityGitlabPipelinesTable />
         </Grid>
       </Grid>
+    </EntitySwitch.Case>
+
+    <EntitySwitch.Case if={e => Boolean(isArgocdAvailable(e))}>
+      <EntityArgoCDHistoryCard />
     </EntitySwitch.Case>
 
     <EntitySwitch.Case>
@@ -140,17 +149,38 @@ const entityWarningContent = (
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
     {entityWarningContent}
+
+    {/* Row 1: About | ArgoCD (falls back to graph when ArgoCD is unavailable) */}
     <Grid item md={6}>
       <EntityAboutCard variant="gridItem" />
     </Grid>
-    <Grid item md={6} xs={12}>
-      <EntityCatalogGraphCard variant="gridItem" height={400} />
-    </Grid>
+    <EntitySwitch>
+      <EntitySwitch.Case if={e => Boolean(isArgocdAvailable(e))}>
+        <Grid item md={6} xs={12}>
+          <EntityArgoCDOverviewCard />
+        </Grid>
+      </EntitySwitch.Case>
+      <EntitySwitch.Case>
+        <Grid item md={6} xs={12}>
+          <EntityCatalogGraphCard variant="gridItem" height={400} />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
 
-    <Grid item md={4} xs={12}>
+    {/* Row 2: Relations graph | Links */}
+    <EntitySwitch>
+      <EntitySwitch.Case if={e => Boolean(isArgocdAvailable(e))}>
+        <Grid item md={6} xs={12}>
+          <EntityCatalogGraphCard variant="gridItem" height={400} />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+    <Grid item md={6} xs={12}>
       <EntityLinksCard />
     </Grid>
-    <Grid item md={8} xs={12}>
+
+    {/* Row 3: Subcomponents full width */}
+    <Grid item xs={12}>
       <EntityHasSubcomponentsCard variant="gridItem" />
     </Grid>
   </Grid>
