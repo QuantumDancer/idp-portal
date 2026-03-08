@@ -4,6 +4,19 @@ stages:
   - deploy:homelab
   - deploy:development
 
+# Run MR pipelines when an MR is open; fall back to branch pipelines otherwise.
+# Without this, jobs without explicit `rules:` only appear in branch pipelines
+# and are silently omitted from MR pipelines, meaning lint/test never show up
+# in MR Code Quality / coverage reports.
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    # Suppress the duplicate branch pipeline when an MR is already open so we
+    # don't run verify twice for the same commit.
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+
 variables:
   DEPLOYMENT_REPO: idp/platform/idp-portal-deployment
 
