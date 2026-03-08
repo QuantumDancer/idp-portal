@@ -11,6 +11,7 @@ import {
   gitlabPlugin,
   catalogPluginGitlabFillerProcessorModule,
 } from '@immobiliarelabs/backstage-plugin-gitlab-backend';
+import { scaffolderModuleCustomActions } from './scaffolder/module';
 
 const backend = createBackend();
 
@@ -23,6 +24,7 @@ backend.add(import('@backstage/plugin-scaffolder-backend-module-gitlab'));
 backend.add(
   import('@backstage/plugin-scaffolder-backend-module-notifications'),
 );
+backend.add(scaffolderModuleCustomActions);
 
 // techdocs plugin
 backend.add(import('@backstage/plugin-techdocs-backend'));
