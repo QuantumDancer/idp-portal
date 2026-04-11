@@ -80,4 +80,7 @@ backend.add(gitlabPlugin);
 // auto-fills gitlab.com/project-slug annotation on catalog entities discovered from GitLab
 backend.add(catalogPluginGitlabFillerProcessorModule);
 
+// MCP server - exposes Backstage actions as MCP tools for AI assistants
+backend.add(import('@backstage/plugin-mcp-actions-backend'));
+
 backend.start();

@@ -8,6 +8,17 @@ backend:
   # all interfaces, the most permissive setting. The right value depends on your specific deployment.
   listen: ':7007'
 
+  # Configures which plugin namespaces the MCP server exposes as tools.
+  # Each source maps to the actions registered by that plugin.
+  #  - 'catalog' exposes entity queries and validation
+  #  - 'scaffolder' exposes template actions
+  # Future integrations to consider: 'kubernetes' (once the k8s plugin registers actions),
+  # 'crossplane' and 'kyverno' (once added to backstage), and any custom scaffolder action modules
+  # added to packages/backend/src/scaffolder/.
+  actions:
+    pluginSources:
+      - 'catalog'
+      - 'scaffolder'
   # config options: https://node-postgres.com/apis/client
   database:
     client: pg
@@ -41,6 +52,10 @@ auth:
         signIn:
           resolvers:
             - resolver: usernameMatchingUserEntityName
+  # MCP clients (Claude Desktop, Cursor, etc.) obtain per-user tokens via an OAuth browser
+  # flow rather than a shared static token — permissions and audit logs match the web UI.
+  experimentalDynamicClientRegistration:
+    enabled: true
 
 kubernetes:
   clusterLocatorMethods:
