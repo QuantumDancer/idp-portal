@@ -23,9 +23,15 @@ Tokens expire after one hour, after which the OAuth flow repeats.
 
 ### Connecting an AI client
 
-Endpoint: `http://localhost:7007/api/mcp-actions/v1` (local) or `https://<your-backstage-host>/api/mcp-actions/v1` (production).
+#### Local development
 
-For Claude Code, add the following to `~/.claude.json`:
+When working inside this repository, the MCP server is pre-configured via `.mcp.json` at the repo root.
+Claude Code picks this up automatically, no manual setup is needed.
+The local server is available at `http://localhost:7007/api/mcp-actions/v1` (requires `yarn start` to be running).
+
+#### Production
+
+To connect Claude Code to the production IDP portal permanently, add the following to your global `~/.claude.json`:
 
 ```json
 {
@@ -37,3 +43,6 @@ For Claude Code, add the following to `~/.claude.json`:
   }
 }
 ```
+
+This makes the IDP portal available as an MCP tool in all your Claude Code sessions, not just within this repository.
+Other AI clients (Cursor, etc.) support similar per-user config files. Consult their documentation for the equivalent setting.
