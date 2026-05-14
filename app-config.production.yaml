@@ -75,6 +75,18 @@ argocd:
           url: https://argocd.k8s.home.rottlr.de
           token: ${ARGOCD_HOMELAB_TOKEN}
 
+techdocs:
+  builder: 'external'
+  generator:
+    runIn: 'local'
+  publisher:
+    type: 'awsS3'
+    awsS3:
+      bucketName: ${TECHDOCS_S3_BUCKET}
+      region: ${TECHDOCS_S3_REGION}
+      endpoint: ${TECHDOCS_S3_ENDPOINT}
+      s3ForcePathStyle: ${TECHDOCS_S3_FORCE_PATH_STYLE}
+
 catalog:
   providers:
     gitlab:
