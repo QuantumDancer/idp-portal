@@ -1,10 +1,6 @@
-/*
- * Hi!
- *
- * Note that this is an EXAMPLE Backstage backend. Please check the README.
- *
- * Happy hacking!
- */
+// Must be the very first import so OTel patches Node.js internals before
+// any other module is loaded. See packages/backend/src/instrumentation.ts.
+import './instrumentation';
 
 import { createBackend } from '@backstage/backend-defaults';
 import {
