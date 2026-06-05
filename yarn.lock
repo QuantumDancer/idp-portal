@@ -8960,6 +8960,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@opentelemetry/api@npm:^1.9.1":
+  version: 1.9.1
+  resolution: "@opentelemetry/api@npm:1.9.1"
+  checksum: 10c0/c608485fc8b5a91e1f7e05e843b45b509307456b31cd2ad365933d90813e40ebfedf179f1451c762037e82d7c76aa8500e95d2da3609f640a1206cde5322cd14
+  languageName: node
+  linkType: hard
+
 "@opentelemetry/auto-instrumentations-node@npm:*":
   version: 0.76.0
   resolution: "@opentelemetry/auto-instrumentations-node@npm:0.76.0"
@@ -18135,6 +18142,7 @@ __metadata:
     "@backstage/plugin-signals-backend": "npm:^0.3.13"
     "@backstage/plugin-techdocs-backend": "npm:^2.1.6"
     "@immobiliarelabs/backstage-plugin-gitlab-backend": "npm:^6.13.0"
+    "@opentelemetry/api": "npm:^1.9.1"
     "@opentelemetry/auto-instrumentations-node": "npm:*"
     "@opentelemetry/exporter-trace-otlp-grpc": "npm:*"
     "@opentelemetry/sdk-node": "npm:*"
