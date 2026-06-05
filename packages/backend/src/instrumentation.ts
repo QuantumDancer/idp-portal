@@ -7,13 +7,18 @@
  * local dev is unaffected by default.
  *
  * In production, set:
- *   OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy-receiver.k8s-monitoring.svc.cluster.local:4317
+ *   OTEL_EXPORTER_OTLP_ENDPOINT=http://k8s-monitoring-alloy-receiver.k8s-monitoring.svc.cluster.local:4317
  *   OTEL_SERVICE_NAME=backstage
  */
 
+import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
+
+// Surface exporter failures (wrong hostname, connection refused, etc.) in pod
+// logs instead of silently dropping spans.
+diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.ERROR);
 
 const endpoint = process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
 
