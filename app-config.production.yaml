@@ -12,6 +12,8 @@ backend:
   # Each source maps to the actions registered by that plugin.
   #  - 'catalog' exposes entity queries and validation
   #  - 'scaffolder' exposes template actions
+  #  - 'techdocs' exposes get-metadata and get-content (registered by
+  #    packages/backend/src/techdocs/module.ts)
   # Future integrations to consider: 'kubernetes' (once the k8s plugin registers actions),
   # 'crossplane' and 'kyverno' (once added to backstage), and any custom scaffolder action modules
   # added to packages/backend/src/scaffolder/.
@@ -19,6 +21,7 @@ backend:
     pluginSources:
       - 'catalog'
       - 'scaffolder'
+      - 'techdocs'
   # config options: https://node-postgres.com/apis/client
   database:
     client: pg

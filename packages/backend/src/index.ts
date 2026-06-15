@@ -8,6 +8,7 @@ import {
   catalogPluginGitlabFillerProcessorModule,
 } from '@immobiliarelabs/backstage-plugin-gitlab-backend';
 import { scaffolderModuleCustomActions } from './scaffolder/module';
+import { techdocsModuleMcpActions } from './techdocs/module';
 
 const backend = createBackend();
 
@@ -24,6 +25,9 @@ backend.add(scaffolderModuleCustomActions);
 
 // techdocs plugin
 backend.add(import('@backstage/plugin-techdocs-backend'));
+// registers techdocs:get-metadata and techdocs:get-content in the Actions
+// Registry so the MCP server can expose docs to AI clients (see pluginSources)
+backend.add(techdocsModuleMcpActions);
 
 // auth plugin
 backend.add(import('@backstage/plugin-auth-backend'));

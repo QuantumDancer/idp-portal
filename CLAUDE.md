@@ -43,14 +43,15 @@ yarn build-image          # build Docker image (multi-arch via buildx)
 
 All plugins are registered via dynamic import. Notable ones:
 
-| Plugin                                             | Purpose                                                  |
-| -------------------------------------------------- | -------------------------------------------------------- |
-| `@backstage/plugin-mcp-actions-backend`            | Exposes catalog + scaffolder as MCP tools for AI clients |
-| `@immobiliarelabs/backstage-plugin-gitlab-backend` | GitLab REST proxy (self-hosted instance)                 |
-| `@roadiehq/backstage-plugin-argo-cd-backend`       | ArgoCD integration                                       |
-| `@backstage/plugin-kubernetes-backend`             | Multi-tenant K8s via service accounts                    |
-| `@backstage/plugin-search-backend-module-pg`       | PostgreSQL search engine                                 |
-| Scaffolder custom module                           | Registers the `fs:append` custom action (see below)      |
+| Plugin                                             | Purpose                                                       |
+| -------------------------------------------------- | ------------------------------------------------------------- |
+| `@backstage/plugin-mcp-actions-backend`            | Exposes catalog + scaffolder as MCP tools for AI clients      |
+| `@immobiliarelabs/backstage-plugin-gitlab-backend` | GitLab REST proxy (self-hosted instance)                      |
+| `@roadiehq/backstage-plugin-argo-cd-backend`       | ArgoCD integration                                            |
+| `@backstage/plugin-kubernetes-backend`             | Multi-tenant K8s via service accounts                         |
+| `@backstage/plugin-search-backend-module-pg`       | PostgreSQL search engine                                      |
+| Scaffolder custom module                           | Registers the `fs:append` custom action (see below)           |
+| TechDocs custom module                             | Registers `techdocs:get-metadata` / `get-content` (see below) |
 
 ### Frontend (`packages/app/src/App.tsx`)
 
@@ -64,6 +65,15 @@ Sign-in is GitLab OAuth (`gitlabAuthApiRef`).
 
 The module is registered via `createBackendModule` + extension points in `packages/backend/src/scaffolder/module.ts`.
 
+### Custom TechDocs actions
+
+`packages/backend/src/techdocs/module.ts` registers two read-only actions in the Actions Registry under the `techdocs` plugin id, so the MCP server can expose documentation to AI clients (TechDocs ships no actions of its own):
+
+- `techdocs:get-metadata` — site info plus the list of available page paths for an entity.
+- `techdocs:get-content` — a rendered page fetched over the TechDocs HTTP API and converted to plain text (`htmlToText.ts`).
+
+Both call TechDocs on behalf of the requesting user (`auth.getPluginRequestToken`), preserving per-user permissions. They are only surfaced because `'techdocs'` is listed under `backend.actions.pluginSources` in both config files.
+
 ### Configuration
 
 Two config layers, merged at startup:
@@ -75,7 +85,7 @@ Key integrations configured there: self-hosted GitLab at `gitlab.home.rottlr.de`
 
 ### MCP server
 
-The backend exposes catalog and scaffolder actions as MCP tools at `/api/mcp-actions/v1` (plugin: `@backstage/plugin-mcp-actions-backend`). Authentication uses OAuth Dynamic Client Registration — on first connect a browser login is triggered; token TTL is 1 hour. Respects the same permissions as the web UI.
+The backend exposes catalog, scaffolder, and techdocs actions as MCP tools at `/api/mcp-actions/v1` (plugin: `@backstage/plugin-mcp-actions-backend`). Authentication uses OAuth Dynamic Client Registration — on first connect a browser login is triggered; token TTL is 1 hour. Respects the same permissions as the web UI.
 
 Local dev auto-config: `.mcp.json` points Claude Code at `http://localhost:7007/api/mcp-actions/v1`.
 
