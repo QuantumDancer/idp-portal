@@ -3,6 +3,8 @@
  * auto-instrumentations can patch Node.js built-ins and third-party libraries
  * at require-time.
  *
+ * Traces and metrics are both exported over OTLP/gRPC to the same endpoint.
+ *
  * Initialization is skipped when OTEL_EXPORTER_OTLP_ENDPOINT is unset, so
  * local dev is unaffected by default.
  *
@@ -15,6 +17,8 @@ import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
+import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
+import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 
 // Surface exporter failures (wrong hostname, connection refused, etc.) in pod
 // logs instead of silently dropping spans.
@@ -27,6 +31,12 @@ if (endpoint) {
     // Endpoint and service name are read from OTEL_EXPORTER_OTLP_ENDPOINT
     // and OTEL_SERVICE_NAME env vars automatically.
     traceExporter: new OTLPTraceExporter(),
+    // Pin metrics to gRPC explicitly. Without a reader, NodeSDK auto-configures
+    // one that defaults to OTLP/HTTP, which then fails against the gRPC-only
+    // receiver port (4317) with a "Expected HTTP/" parse error.
+    metricReader: new PeriodicExportingMetricReader({
+      exporter: new OTLPMetricExporter(),
+    }),
     instrumentations: [
       getNodeAutoInstrumentations({
         // File system instrumentation is too noisy for this use-case.
