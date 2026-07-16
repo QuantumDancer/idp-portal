@@ -2062,30 +2062,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/app-defaults@npm:^1.7.10":
-  version: 1.7.10
-  resolution: "@backstage/app-defaults@npm:1.7.10"
-  dependencies:
-    "@backstage/core-app-api": "npm:^1.20.3"
-    "@backstage/core-components": "npm:^0.18.12"
-    "@backstage/core-plugin-api": "npm:^1.12.8"
-    "@backstage/frontend-plugin-api": "npm:^0.17.3"
-    "@backstage/plugin-permission-react": "npm:^0.5.3"
-    "@backstage/theme": "npm:^0.7.3"
-    "@material-ui/core": "npm:^4.12.2"
-    "@material-ui/icons": "npm:^4.9.1"
-  peerDependencies:
-    "@types/react": ^17.0.0 || ^18.0.0
-    react: ^17.0.0 || ^18.0.0
-    react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.30.2
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 10c0/ca24fbe1e8bbe2677fcae210bfc8bb3db92b75b926e157eb452a5e5072d2b931202e12479c0a28fcd682e8cf7be917775dc4bbcfad55f6f8735761458c0de5a7
-  languageName: node
-  linkType: hard
-
 "@backstage/backend-app-api@npm:^1.7.2":
   version: 1.7.2
   resolution: "@backstage/backend-app-api@npm:1.7.2"
@@ -18171,19 +18147,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "app@workspace:packages/app"
   dependencies:
-    "@backstage/app-defaults": "npm:^1.7.10"
     "@backstage/catalog-model": "npm:^1.9.0"
     "@backstage/cli": "npm:^0.36.4"
-    "@backstage/core-app-api": "npm:^1.20.3"
-    "@backstage/core-compat-api": "npm:^0.5.13"
     "@backstage/core-components": "npm:^0.18.12"
     "@backstage/core-plugin-api": "npm:^1.12.8"
     "@backstage/frontend-defaults": "npm:^0.5.4"
+    "@backstage/frontend-plugin-api": "npm:^0.17.3"
     "@backstage/integration-react": "npm:^1.2.20"
     "@backstage/plugin-api-docs": "npm:^0.14.3"
+    "@backstage/plugin-app-react": "npm:^0.2.5"
     "@backstage/plugin-auth": "npm:^0.1.10"
     "@backstage/plugin-catalog": "npm:^2.0.7"
-    "@backstage/plugin-catalog-common": "npm:^1.1.10"
     "@backstage/plugin-catalog-graph": "npm:^0.6.6"
     "@backstage/plugin-catalog-import": "npm:^0.13.15"
     "@backstage/plugin-catalog-react": "npm:^3.2.0"
