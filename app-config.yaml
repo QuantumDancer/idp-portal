@@ -1,6 +1,35 @@
 app:
   title: Ben's IDP Portal
   baseUrl: http://localhost:3000
+  # Entity Overview tab card layout (new frontend system).
+  # List order = display order; `<id>: false` hides a card.
+  extensions:
+    - entity-card:argocd/overviewCard
+    - entity-card:catalog/depends-on-components
+    - entity-card:catalog/depends-on-resources
+    - entity-card:catalog/has-subcomponents
+    - entity-card:catalog-graph/relations
+    - entity-card:api-docs/provided-apis
+    - entity-card:api-docs/consumed-apis
+    - entity-card:gitlab/readme
+    - entity-card:gitlab/coverage: false
+    - entity-card:gitlab/releases: false
+    - entity-card:gitlab/merge-requests-stats: false
+    - entity-card:gitlab/people: false
+    - entity-card:gitlab/languages: false
+    - entity-card:gitlab/issues-table: false
+    - entity-card:gitlab/pipelines-table: false
+    - entity-card:gitlab/merge-requests-table: false
+    - entity-card:argocd/historyCard: false
+    # The Gitlab tab ships ungrouped (renders after all grouped tabs);
+    # development sorts it before the Kubernetes tab (deployment group).
+    - entity-content:gitlab/gitlab:
+        config:
+          group: development
+    # The ArgoCD tab also ships ungrouped; it belongs with Kubernetes.
+    - entity-content:argocd/ArgoCdPage:
+        config:
+          group: deployment
 
 organization:
   name: Ben's IDP
